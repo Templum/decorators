@@ -1,0 +1,40 @@
+{
+  "name": "@templum/decorators",
+  "version": "0.1.0",
+  "description": "a util package that offers a varity of typescript (5.0) decorators covering different functionalities",
+  "main": "lib.ts",
+  "scripts": {
+    "check:lint": "eslint ./lib",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "type": "module",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Templum/decorators.git"
+  },
+  "keywords": [
+    "decorators",
+    "typescript",
+    "aop",
+    "aspect-programming"
+  ],
+  "devDependencies": {
+    "@types/node": "^20.11.24",
+    "typescript": "^5.3.3",
+    "typescript-eslint":"^7.1.0",
+    "@typescript-eslint/eslint-plugin": "^7.0.2",
+    "@typescript-eslint/parser": "^7.1.0",
+    "eslint": "^8.0.1",
+    "eslint-config-prettier": "^9.1.0",
+    "eslint-plugin-prettier": "^5.1.3",
+    "prettier": "^3.2.5",
+    "c8": "^9.1.0"
+  },
+  "private": "true",
+  "author": "Templum <templum.dev@gmail.com>",
+  "license": "Apache-2.0",
+  "bugs": {
+    "url": "https://github.com/Templum/decorators/issues"
+  },
+  "homepage": "https://github.com/Templum/decorators#readme"
+}
