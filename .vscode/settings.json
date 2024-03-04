@@ -44,6 +44,7 @@
         "HACK",
         "FIXME",
         "TODO",
+        "IDEA",
     ],
     "todo-tree.general.statusBar": "current file",
 }
