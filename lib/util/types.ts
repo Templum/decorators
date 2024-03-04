@@ -2,7 +2,8 @@
 export type MethodDecorator = (target: Function, ctx: ClassMethodDecoratorContext) => (this: unknown, ...args: unknown[]) => unknown;
 
 /**
- * The supported time units relevant for operations that touch on timings
+ * The supported unit of times. Some decorators may exclude Nanosecond given
+ * the nature of NodeJS/JavaScript
  */
 export enum UnitOfTime {
     Nanosecond,

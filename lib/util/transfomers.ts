@@ -23,7 +23,7 @@ function getFactor(targetUnit: UnitOfTime): typeof NS_PER_NS | typeof NS_PER_SEC
  * Converts the received time based on it's unit of time to the target unit of time. It does not support time differences
  * that are solarge they are no longer a safe integer.
  * @param time either captured via hrtim as bigint with nanosecond resolution or Date.now with millisecond resolution
- * @param to
+ * @param to target unit
  * @returns converted time in target unit. If value of time is above safe integer it will return -1
  */
 export function convertRecordedTime(time: bigint | number, to: UnitOfTime): number {
