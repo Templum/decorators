@@ -1,4 +1,4 @@
-import { MethodDecorator, UnitOfTime } from '../util/types.js';
+import { UnitOfTime } from '../util/types.js';
 import { convertFrom } from '../util/transfomers.js';
 
 /**
@@ -7,12 +7,12 @@ import { convertFrom } from '../util/transfomers.js';
  * @param time value
  * @param unit of the provided timing
  */
-export function Throttle(time: number, unit: Exclude<UnitOfTime, 'Nanosecond'>): MethodDecorator {
+export function Throttle(time: number, unit: Exclude<UnitOfTime, 'Nanosecond'>) {
     // eslint-disable-next-line @typescript-eslint/ban-types
     return (target: Function, _ctx: ClassMethodDecoratorContext) => {
         let pendingTimeout: unknown = undefined;
 
-        return (self: unknown, ...args: unknown[]): unknown => {
+        return <Fn, Arg, Result>(self: Fn, ...args: Arg[]): Result => {
             if (pendingTimeout === undefined) {
                 pendingTimeout = setTimeout(
                     () => {
@@ -20,8 +20,9 @@ export function Throttle(time: number, unit: Exclude<UnitOfTime, 'Nanosecond'>):
                     },
                     convertFrom(time, UnitOfTime.Millisecond, unit),
                 );
-                return target.call(self, args);
+                return target.call(self, args) as Result;
             }
+            return undefined as Result;
         };
     };
 }

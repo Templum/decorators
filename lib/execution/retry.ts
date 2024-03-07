@@ -1,7 +1,7 @@
 import { isPromiseLike } from '../util/predicates';
 import { convertFrom } from '../util/transfomers';
 
-import { MethodDecorator, UnitOfTime } from '../util/types.js';
+import { UnitOfTime } from '../util/types.js';
 
 /**
  * Retry Strategy for more details on the functions look at the individual members
@@ -53,14 +53,14 @@ const defaultConfig: RetryConfig = {
     unit: UnitOfTime.Millisecond,
 };
 
-export function Retry(isRetrieable: (error: Error) => boolean, config: Partial<RetryConfig> = {}): MethodDecorator {
+export function Retry(isRetrieable: (error: Error) => boolean, config: Partial<RetryConfig> = {}) {
     const { retries, delay, unit, strategy } = Object.assign(defaultConfig, config);
 
     const delayInMs = convertFrom(delay, UnitOfTime.Millisecond, unit as UnitOfTime);
 
     // eslint-disable-next-line @typescript-eslint/ban-types
     return (target: Function, _ctx: ClassMethodDecoratorContext) => {
-        return (self: unknown, ...args: unknown[]): unknown => {
+        return <Fn, Arg, Result>(self: Fn, ...args: Arg[]): Result => {
             const handleSyncRetries = (): unknown => {
                 for (let attempt = 0; attempt < retries; attempt++) {
                     try {
@@ -107,12 +107,12 @@ export function Retry(isRetrieable: (error: Error) => boolean, config: Partial<R
                                     .then((response) => resolve(response))
                                     .catch((error) => reject(error)),
                             );
-                    });
+                    }) as Result;
                 }
 
-                return result;
+                return result as Result;
             } catch (_error) {
-                return handleSyncRetries();
+                return handleSyncRetries() as Result;
             }
         };
     };
