@@ -100,5 +100,9 @@
   },
   "include": [
     "./lib/**/**/*.ts"
+  ],
+  "exclude": [
+    "node_modules",
+    "__test__",
   ]
 }
