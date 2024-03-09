@@ -1,5 +1,5 @@
-import { Debounce } from "../lib/execution/debounce.js";
-import { UnitOfTime } from "../lib/util/types.js";
+import { Debounce } from "../../lib/execution/debounce.js";
+import { UnitOfTime } from "../../lib/util/types.js";
 
 class Test {
     constructor(public counter: number = 0){}

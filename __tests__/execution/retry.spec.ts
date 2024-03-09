@@ -1,5 +1,5 @@
-import { Retry, RetryStrategy } from "../lib/execution/retry.js";
-import { UnitOfTime } from "../lib/util/types.js";
+import { Retry, RetryStrategy } from "../../lib/execution/retry.js";
+import { UnitOfTime } from "../../lib/util/types.js";
 
 const ERROR_MESSAGE = 'Failed';
 
