@@ -18,48 +18,49 @@ class Test {
     }
 }
 
+describe('Debounce Decorator', () => {
+    test('should call through if not in debounce window', async () => {
+        const target = new Test();
+        const before = target.getCounter();
 
-test('should call through if not in debounce window', async () => {
-    const target = new Test();
-    const before = target.getCounter();
+        target.increment();
 
-    target.increment();
+        expect(before).toEqual(0);
+        expect(target.getCounter()).toEqual(1);    
+    });
 
-    expect(before).toEqual(0);
-    expect(target.getCounter()).toEqual(1);    
+    test('should block additional calls while in debounce window', async () => {
+        const target = new Test();
+        const before = target.getCounter();
+
+        target.increment();
+        
+        target.increment();
+        target.increment();
+        target.increment();
+        target.increment();
+
+        const delta = target.getCounter() - before;
+        expect(before).toEqual(0);
+        expect(delta).toEqual(1);
+    });
+
+    test('should allow a call after debounce window passed', async () => {
+        const target = new Test();
+
+        target.increment();
+        target.increment();
+        target.increment();
+
+        const beforeWindow = target.getCounter();
+        expect(beforeWindow).toEqual(1);
+        await new Promise((resolve) => setTimeout(resolve, 10));
+
+        target.increment();
+        target.increment();
+        target.increment();
+
+        const afterWindow = target.getCounter();
+        expect(afterWindow).toEqual(2);
+    });
 });
-
-test('should block additional calls while in debounce window', async () => {
-    const target = new Test();
-    const before = target.getCounter();
-
-    target.increment();
-    
-    target.increment();
-    target.increment();
-    target.increment();
-    target.increment();
-
-    const delta = target.getCounter() - before;
-    expect(before).toEqual(0);
-    expect(delta).toEqual(1);
-});
-
-test('should allow a call after debounce window passed', async () => {
-    const target = new Test();
-
-    target.increment();
-    target.increment();
-    target.increment();
-
-    const beforeWindow = target.getCounter();
-    expect(beforeWindow).toEqual(1);
-    await new Promise((resolve) => setTimeout(resolve, 10));
-
-    target.increment();
-    target.increment();
-    target.increment();
-
-    const afterWindow = target.getCounter();
-    expect(afterWindow).toEqual(2);
-})
