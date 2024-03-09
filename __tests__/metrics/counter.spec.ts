@@ -19,7 +19,6 @@ class Test {
 }
 
 describe('Counter Decorator', () => {
-
     const broadcaster = MetricBroadcaster.getInstance();
 
     test('should increase counter for successful calls', async () => {
