@@ -1,6 +1,5 @@
-import { isPromiseLike } from '../util/predicates';
-import { convertFrom } from '../util/transfomers';
-
+import { isPromiseLike } from '../util/predicates.js';
+import { convertFrom } from '../util/transfomers.js';
 import { UnitOfTime } from '../util/types.js';
 
 /**

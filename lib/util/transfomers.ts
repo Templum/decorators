@@ -1,5 +1,5 @@
-import { canBeNumber, isBigint } from './predicates';
-import { UnitOfTime } from './types';
+import { canBeNumber, isBigint } from './predicates.js';
+import { UnitOfTime } from './types.js';
 
 const NS_PER_NS = 1 as const;
 const NS_PER_SEC = 1e9 as const;
