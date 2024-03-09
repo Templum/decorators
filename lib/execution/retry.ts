@@ -46,6 +46,12 @@ export type RetryConfig = {
     unit: Omit<UnitOfTime, 'Nanosecond'>;
 };
 
+type RetryDecorator = <TThis, TArgs extends unknown[], Return>(
+    // eslint-disable-next-line @typescript-eslint/ban-types
+    target: Function,
+    ctx: ClassMethodDecoratorContext<TThis, (this: TThis, ...args: TArgs) => Return>,
+) => void;
+
 const defaultConfig: RetryConfig = {
     retries: 3,
     strategy: RetryStrategy.Delay,
@@ -53,18 +59,21 @@ const defaultConfig: RetryConfig = {
     unit: UnitOfTime.Millisecond,
 };
 
-export function Retry(isRetrieable: (error: Error) => boolean, config: Partial<RetryConfig> = {}) {
+export function Retry(isRetrieable: (error: Error) => boolean, config: Partial<RetryConfig> = {}): RetryDecorator {
     const { retries, delay, unit, strategy } = Object.assign(defaultConfig, config);
-
     const delayInMs = convertFrom(delay, UnitOfTime.Millisecond, unit as UnitOfTime);
 
-    // eslint-disable-next-line @typescript-eslint/ban-types
-    return (target: Function, _ctx: ClassMethodDecoratorContext) => {
-        return <Fn, Arg, Result>(self: Fn, ...args: Arg[]): Result => {
+    return <TThis, TArgs extends unknown[], Return>(
+        // eslint-disable-next-line @typescript-eslint/ban-types
+        target: Function,
+        _ctx: ClassMethodDecoratorContext<TThis, (this: TThis, ...args: TArgs) => Return>,
+    ) => {
+        // eslint-disable-next-line @typescript-eslint/ban-types
+        return function (this: TThis, ...args: unknown[]): Return {
             const handleSyncRetries = (): unknown => {
                 for (let attempt = 0; attempt < retries; attempt++) {
                     try {
-                        const result: unknown = target.call(self, args);
+                        const result: unknown = target.call(this, ...args);
                         return result;
                     } catch (error) {
                         if (!isRetrieable(error as Error) || attempt + 1 >= retries) {
@@ -77,7 +86,7 @@ export function Retry(isRetrieable: (error: Error) => boolean, config: Partial<R
             const handleAsyncRetries = async (): Promise<unknown> => {
                 for (let attempt = 0; attempt < retries; attempt++) {
                     try {
-                        const result: Promise<unknown> = target.call(self, args) as Promise<unknown>;
+                        const result: Promise<unknown> = target.call(this, ...args) as Promise<unknown>;
                         return await result;
                     } catch (error) {
                         if (!isRetrieable(error as Error) || attempt + 1 >= retries) {
@@ -96,7 +105,7 @@ export function Retry(isRetrieable: (error: Error) => boolean, config: Partial<R
             };
 
             try {
-                const result: unknown = target.call(self, args);
+                const result: unknown = target.call(this, ...args);
 
                 if (isPromiseLike(result)) {
                     return new Promise((resolve, reject) => {
@@ -107,12 +116,12 @@ export function Retry(isRetrieable: (error: Error) => boolean, config: Partial<R
                                     .then((response) => resolve(response))
                                     .catch((error) => reject(error)),
                             );
-                    }) as Result;
+                    }) as Return;
                 }
 
-                return result as Result;
+                return result as Return;
             } catch (_error) {
-                return handleSyncRetries() as Result;
+                return handleSyncRetries() as Return;
             }
         };
     };
