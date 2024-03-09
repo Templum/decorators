@@ -52,5 +52,5 @@ export function convertFrom(time: number, from: UnitOfTime, to: UnitOfTime): num
     }
 
     const timeInNs = from == UnitOfTime.Nanosecond ? time : time * getFactor(from);
-    return Math.floor(timeInNs / getFactor(to));
+    return Number((timeInNs / getFactor(to)).toFixed(3));
 }
