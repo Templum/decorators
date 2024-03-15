@@ -9,6 +9,12 @@ type MeasureDecorator = <TThis, TArgs extends unknown[], Return>(
     ctx: ClassMethodDecoratorContext<TThis, (this: TThis, ...args: TArgs) => Return>,
 ) => void;
 
+/**
+ * A Method Decorat that measures execution time if hrtime is available it will be leverage
+ * if not timings will be measured using dates. The time will be broadcasted in the specified unit.
+ * @param label that will be used for broadcasting
+ * @param unit which the time should be record in
+ */
 export function Measure(label: string, unit: UnitOfTime): MeasureDecorator {
     return <TThis, TArgs extends unknown[], Return>(
         // eslint-disable-next-line @typescript-eslint/ban-types
