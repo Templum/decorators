@@ -6,6 +6,8 @@ on:
         required: true
         description: "SEMVER Version of the next release"
         type: string
+permissions:
+  contents: write
 jobs:
   create-tag:
     runs-on: ubuntu-latest
