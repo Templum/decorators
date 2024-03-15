@@ -1,0 +1,23 @@
+name: PR Flow
+on:
+  push: # Only trigger for tags with format v****
+    tags:
+      - v[0-9]+.[0-9]+.[0-9]+
+jobs:
+  flow:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      id-token: write # The OIDC ID token is used for authentication with JSR.
+    steps:
+      - uses: actions/checkout@v4
+      - name: Set up Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: "lts"
+      - run: npm run check:tsc
+      - run: npm run test:unit
+      - run: npx jsr publish
+
+      
+        

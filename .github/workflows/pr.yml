@@ -1,0 +1,29 @@
+name: PR Flow
+on: [pull_request]
+jobs:
+  flow:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        node-version: ['18.x', 'lts']
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 2
+      - run: git checkout HEAD^2
+        if: ${{ github.event_name == 'pull_request' }}
+      - name: Set up Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ matrix.node-version }}
+      - name: Check Lint
+        run: npm run check:lint
+      - name: Check Typescript
+        run: npm run check:tsc
+      - name: Run Unit Tests
+        run: npm run test:unit
+      - uses: ArtiomTr/jest-coverage-report-action@v2
+        with:
+          package-manager: npm
+        continue-on-error: true
+        
