@@ -1,4 +1,4 @@
-name: PR Flow
+name: Release Flow
 on:
   push: # Only trigger for tags with format v****
     tags:
