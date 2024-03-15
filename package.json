@@ -6,7 +6,8 @@
   "scripts": {
     "check:lint": "eslint ./lib",
     "check:tsc": "tsc --noEmit",
-    "test:unit": "jest --coverage"
+    "test:unit": "jest --runInBand",
+    "test:coverage": "jest --runInBand --coverage"
   },
   "type": "module",
   "repository": {
