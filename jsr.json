@@ -1,5 +1,13 @@
 {
   "name": "@templum/decorators",
   "version": "0.1.0",
-  "exports": "./lib.ts"
+  "exports": "./lib/entry.ts",
+  "publish": {
+    "include": [
+      "LICENSE",
+      "README.md",
+      "CHANGELOG.md",
+      "lib/**/*.ts"
+    ]
+  }
 }

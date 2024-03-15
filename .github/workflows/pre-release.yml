@@ -1,0 +1,25 @@
+name: Prepare Release
+on:
+  workflow_dispatch:
+    inputs:
+      new_version:
+        required: true
+        description: "SEMVER Version of the next release"
+        type: string
+jobs:
+  prepare:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - name: "Generate Changelog"
+        uses: sercanuste/gitmoji-changelog-action@v1
+        with:
+          add_author: true
+      - uses: rickstaa/action-create-tag@v1
+        id: "tag_create"
+        with:
+          tag: "${{ github.event.inputs.new_version }}"
+          message: ":bookmark: Releasing ${{ github.event.inputs.new_version }}"
+          tag_exists_error: true

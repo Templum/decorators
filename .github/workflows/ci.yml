@@ -1,0 +1,29 @@
+name: CI Flow
+on:
+  push:
+    paths-ignore:
+      - ".gitignore"
+      - "LICENSE"
+      - "README.md"
+    branches:
+      - "main"
+      - "develop"
+jobs:
+  flow:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        node-version: ['18.x', '20.x']
+    steps:
+      - uses: actions/checkout@v4
+      - name: Set up Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ matrix.node-version }}
+      - run: npm ci
+      - name: Check Lint
+        run: npm run check:lint
+      - name: Check Typescript
+        run: npm run check:tsc
+      - name: Run Unit Tests
+        run: npm run test:unit

@@ -20,7 +20,8 @@
                 "kavod-io.vscode-jest-test-adapter",
                 "ms-vscode.test-adapter-converter",
                 "hbenl.vscode-test-explorer",
-                "pflannery.vscode-versionlens"
+                "pflannery.vscode-versionlens",
+                "me-dutour-mathieu.vscode-github-actions"
             ]
         }
     }
