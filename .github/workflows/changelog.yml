@@ -1,6 +1,8 @@
 name: Update Changelog
 on:
   workflow_dispatch:
+permissions:
+  contents: write
 jobs:
   changelog:
     runs-on: ubuntu-latest
