@@ -21,7 +21,7 @@ export function isBigint(num: unknown): num is bigint {
 }
 
 export function canBeNumber(num: bigint): boolean {
-    if (num <= Number.MAX_SAFE_INTEGER && num >= Number.MIN_SAFE_INTEGER) {
+    if (num <= Number.MAX_SAFE_INTEGER) {
         return true;
     }
 
