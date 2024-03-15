@@ -8,7 +8,7 @@ type DebounceDecorator = <TThis, TArgs extends unknown[], Return extends void>(
 ) => void;
 
 /**
- * A Method Decorator that debounces additional calls beig made to the decorated target. If the debounce
+ * A Method Decorator that debounces additional calls being made to the decorated target. If the debounce
  * window has not yet passed.
  * @param time value
  * @param unit of the provided timing
