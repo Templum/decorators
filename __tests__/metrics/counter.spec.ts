@@ -1,6 +1,6 @@
-import { CallCounter, Counter } from "../../lib/metrics/counter";
-import { MetricBroadcaster } from "../../lib/metrics/broadcaster";
-import { Metric } from "../../lib/util/types";
+import { CallCounter, Counter } from "../../lib/metrics/counter.js";
+import { MetricBroadcaster } from "../../lib/metrics/broadcaster.js";
+import { Metric } from "../../lib/util/types.js";
 
 class CallTest {
     constructor(private spy: jest.Mock) {}

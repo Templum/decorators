@@ -1,7 +1,7 @@
-import * as mod from '../../lib/util/predicates';
-import { Measure } from "../../lib/metrics/measure";
-import { MetricBroadcaster } from "../../lib/metrics/broadcaster";
-import { Metric, UnitOfTime } from "../../lib/util/types";
+import * as mod from '../../lib/util/predicates.js';
+import { Measure } from "../../lib/metrics/measure.js";
+import { MetricBroadcaster } from "../../lib/metrics/broadcaster.js";
+import { Metric, UnitOfTime } from "../../lib/util/types.js";
 
 class Test {
     constructor(private spy: jest.Mock) {}
@@ -11,7 +11,7 @@ class Test {
         this.spy();
 
         let sum = 0;
-        for (let i = 0; i < 1000; i++) {
+        for (let i = 0; i < 100000; i++) {
             sum += i * i;
         }
 
@@ -23,7 +23,7 @@ class Test {
         this.spy();
 
         let sum = 0;
-        for (let i = 0; i < 1000; i++) {
+        for (let i = 0; i < 100000; i++) {
             sum += i * i;
         }
 
