@@ -1,5 +1,7 @@
 name: PR Flow
 on: [pull_request]
+permissions:
+  pull-requests: write
 jobs:
   flow:
     runs-on: ubuntu-latest
