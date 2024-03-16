@@ -9,8 +9,20 @@ type GaugeDecorator = <TThis, TArgs extends unknown[], Return>(
 ) => void;
 
 /**
- * A Method Decorator that tracks ongoing calls and broadcast updates as the happen.
+ * Gauge is an Class Method Decorator as well as 'Metric' Decorator. The values recorded by this are consumable via the {@link MetricBroadcaster}.
+ * It tracks all currently "inflight" calls to the decorated method. Meaning the counted value will increase at the start of the call
+ * and will decrease once execution finished.
+ *
  * @param label that will be used for broadcasting
+ *
+ * ```ts
+ * class Example {
+ *      @Gauge('Backend')
+ *      public callBackend(): Promise<void> {
+ *          ...
+ *      }
+ * }
+ * ```
  */
 export function Gauge(label: string): GaugeDecorator {
     return <TThis, TArgs extends unknown[], Return>(

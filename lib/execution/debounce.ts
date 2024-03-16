@@ -8,10 +8,21 @@ type DebounceDecorator = <TThis, TArgs extends unknown[], Return extends void>(
 ) => void;
 
 /**
- * A Method Decorator that debounces additional calls being made to the decorated target. If the debounce
- * window has not yet passed.
+ * Debounce is an Class Method Decorator, that is configured with the specified parameters.
+ * It debounces additional calls to the decorated method during the debounce window. Hence
+ * the decorated method needs to have a void type return.
+ *
  * @param time value
  * @param unit of the provided timing
+ *
+ * ```ts
+ * class Example {
+ *      @Debounce(5, UnitOfTime.Millisecond)
+ *      public reportEvent(): void {
+ *          ...
+ *      }
+ * }
+ * ```
  */
 export function Debounce(time: number, unit: Exclude<UnitOfTime, 'Nanosecond'>): DebounceDecorator {
     return <TThis, TArgs extends unknown[], Return extends void>(
