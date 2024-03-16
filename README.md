@@ -1,31 +1,15 @@
 # @templum/decorators
 
-This library is exclusively published in the JavaScript Registry ([JSR](https://jsr.io/)) and offers a variety of decorators with different functionalities. They are based on TypeScript 5.0 decorators and don't require the legacy flag.
-
-## Installation
-
-Deno:
-```sh
-deno add @templum/decorators
-```
-
-NPM (use any of npx, yarn dlx, pnpm dlx, or bunx):
-```sh
-npx jsr add @templum/decorators
-```
-
-Afterwards can be used like any ESModule:
-```TypeScript
-import { Once } from "@templum/decorators";
-
-class Test {
-    @Once()
-    public init(): void {
-        ...
-    }
-}
-```
+[@templum/decorators](https://jsr.io/@templum/decorators) is a nice utility library offering a set of decorators that provide various functionalities.
+The decorators are implemented as [ECMAScript](https://github.com/tc39/proposal-decorators) Decorators, which means they can be leverages without enabling the `--experimentalDecorators` flag. This libary is so far only verified with NodeJS, please reach out if you were able to succesfully consume it in another runtime.
 
 ## Documentation
 
-Follows...
+This libary is published on the JavaScript Registry ([JSR](https://jsr.io/)). Hence the documentation is generated.
+
+* [Install Instructions](https://jsr.io/@templum/decorators)
+* [General Documentation](https://jsr.io/@templum/decorators/doc)
+
+## Bug Reporting & Feature Requests
+
+Please make use of the available templates to report bugs or request features via the [Issues Tab](https://github.com/Templum/decorators/issues).
