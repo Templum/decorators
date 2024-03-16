@@ -1,4 +1,4 @@
-import { Once } from "../../lib/execution/once";
+import { Once } from "../../lib/execution/once.js";
 
 
 class Test {

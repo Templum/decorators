@@ -9,8 +9,20 @@ type CounterDecorator = <TThis, TArgs extends unknown[], Return>(
 ) => void;
 
 /**
- * A Method Decorator that counts all calls being made, does not differeniate between success and failure
+ * CallCounter is an Class Method Decorator as well as 'Metric' Decorator. The values recorded by this are consumable via the {@link MetricBroadcaster}.
+ * It is a simple counter that increases everytime the method is called, it does not differentiate based on the outcome of the call.
+ * The label will be part of the broadcasted metric and can be used to identify the origin.
+ *
  * @param label that will be used for broadcasting
+ *
+ * ```ts
+ * class Example {
+ *      @CallCounter('Something')
+ *      public doSomething(): Promise<void> {
+ *          ...
+ *      }
+ * }
+ * ```
  */
 export function CallCounter(label: string): CounterDecorator {
     return <TThis, TArgs extends unknown[], Return>(
@@ -31,8 +43,20 @@ export function CallCounter(label: string): CounterDecorator {
 }
 
 /**
- * A Method Decorator that counts calls being made and tracks success and failures
- * @param label will be used for broadcasting success and failure as {label}_success / {label}_failure
+ * Counter is an Class Method Decorator as well as 'Metric' Decorator. The values recorded by this are consumable via the {@link MetricBroadcaster}.
+ * It tracks the successfull and unsuccessfull calls to the decorated method.
+ * The label will be part of the broadcasted metric and can be used to identify the origin.
+ *
+ * @param label builds the base for the broadcasting, success and failures will be broadcasted in the format {label}_success & {label}_failure
+ *
+ * ```ts
+ * class Example {
+ *      @Counter('CounterAPI')
+ *      public mayFail(): Promise<void> {
+ *          ...
+ *      }
+ * }
+ * ```
  */
 export function Counter(label: string): CounterDecorator {
     return <TThis, TArgs extends unknown[], Return>(

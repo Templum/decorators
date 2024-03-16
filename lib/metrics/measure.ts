@@ -10,10 +10,21 @@ type MeasureDecorator = <TThis, TArgs extends unknown[], Return>(
 ) => void;
 
 /**
- * A Method Decorat that measures execution time if hrtime is available it will be leverage
- * if not timings will be measured using dates. The time will be broadcasted in the specified unit.
+ * Measure is an Class Method Decorator as well as 'Metric' Decorator. The values recorded by this are consumable via the {@link MetricBroadcaster}.
+ * It tracks how long an call to the decorated method is taking, the observed value is than transformed into the wanted unit of time.
+ * If hrtime is available it will be leveraged to record the timings, in environments where it is not available timestamps via Date Object will be used.
+ *
  * @param label that will be used for broadcasting
- * @param unit which the time should be record in
+ * @param unit in which the time should be broadcasted
+ *
+ * ```ts
+ * class Measure {
+ *      @Gauge('Backend', UnitOfTime.Second)
+ *      public longRunningJob(): Promise<void> {
+ *          ...
+ *      }
+ * }
+ * ```
  */
 export function Measure(label: string, unit: UnitOfTime): MeasureDecorator {
     return <TThis, TArgs extends unknown[], Return>(

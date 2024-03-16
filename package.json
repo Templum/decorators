@@ -1,6 +1,6 @@
 {
   "name": "@templum/decorators",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "a util package that offers a varity of typescript (5.0) decorators covering different functionalities",
   "main": "lib.ts",
   "scripts": {

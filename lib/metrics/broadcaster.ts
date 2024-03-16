@@ -3,7 +3,9 @@ import EventEmitter from 'events';
 import { Kind, Metric } from '../util/types.js';
 
 /**
- * Decleration of the supported metrics
+ * Following versions of the 'metric' event will be raised by the libary.
+ * Please be aware that if you leverage different metric decorators you may
+ * need to check the metric kind before consuming the value.
  */
 export declare interface MetricBroadcaster {
     once(event: 'metric', listener: (metric: Metric<number> & { metric: Kind.Counter }) => void): this;
@@ -16,7 +18,25 @@ export declare interface MetricBroadcaster {
 }
 
 /**
- * MetricBroadcaster allows you to listen to generated Metrics using the 'metric' event.
+ * MetricBroadcaster is the central EventEmitter for this libary. It is a singleton that enables the consumption of metrics raised by
+ * Metric related decorators. This way you can connect them to Prometheus or other destinations if wanted.
+ *
+ * ```ts
+ * // Obtain instance
+ * const broadcaster = MetricBroadcaster.getInstance();
+ *
+ * // Listen to broadcast once
+ * broadcaster.once('metric', (metric) => {
+ *      // Perform operations based on metric.kind
+ *      ...
+ * });
+ *
+ * // Listen to broadcast continous
+ * broadcaster.on('metric', (metric) => {
+ *      // Perform operations based on metric.kind
+ *      ...
+ * });
+ * ```
  */
 export class MetricBroadcaster extends EventEmitter {
     private static instance: MetricBroadcaster;
@@ -32,6 +52,11 @@ export class MetricBroadcaster extends EventEmitter {
         return MetricBroadcaster.instance;
     }
 
+    /**
+     * This method should only called by the libary itself to broadcast observed metrics.
+     * @param metric that was observed
+     * @param value that was recorded
+     */
     public broadcast<T>(metric: Kind, value: Metric<T>): void {
         this.emit('metric', { metric, ...value });
     }

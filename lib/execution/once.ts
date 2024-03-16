@@ -5,8 +5,19 @@ type OnceDecorator = <TThis, TArgs extends unknown[], Return extends void>(
 ) => void;
 
 /**
- * A Method Decorator that ensures a method may only be executed once.
+ * Once is an Class Method Decorator, that is configured with the specified parameter.
+ * It will ensure that the decorated method is only called once and based on the configuration
+ * further calls will either be dropped or raise an error.
  * @param force if true will throw error, else will simply drop calls.
+ *
+ * ```ts
+ * class Example {
+ *      @Once(true)
+ *      public init(): Promise<void> {
+ *          ...
+ *      }
+ * }
+ * ```
  */
 export function Once(force: boolean = false): OnceDecorator {
     return <TThis, TArgs extends unknown[], Return extends void>(

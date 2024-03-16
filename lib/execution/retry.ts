@@ -58,6 +58,27 @@ const defaultConfig: RetryConfig = {
     unit: UnitOfTime.Millisecond,
 };
 
+/**
+ * Retry is an Class Method Decorator, that is configured using an configuration parameter and an predicate function.
+ * It will attempt retries if the decorated method raised an retrtieable error. Deciding if an error is fatal or retrieable
+ * happens using the provided predicate. How it will retry can be configured.
+ *
+ * Please be aware that sync method may only leverage the {@link RetryStrategy.Sequential} Strategie in order to ensure the return type is not altered.
+ * @param isRetrieable method that is called with the catched error to determine if it can be retried
+ * @param config for the retry behaviour, default is 3 retries with fixed delay of 100ms
+ *
+ * ```ts
+ * class Example {
+ *      @Retry(
+ *          error => error instanceof Error,
+ *          { strategy: RetryStrategy.Exponential, delay: 5, unit: UnitOfTime.Millisecond }
+ *      )
+ *      public consumeAPI(): Promise<Record<string,string>> {
+ *          ...
+ *      }
+ * }
+ * ```
+ */
 export function Retry(isRetrieable: (error: Error) => boolean, config: Partial<RetryConfig> = {}): RetryDecorator {
     const { retries, delay, unit, strategy } = Object.assign(defaultConfig, config);
     const delayInMs = convertFrom(delay, UnitOfTime.Millisecond, unit as UnitOfTime);

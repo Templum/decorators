@@ -8,10 +8,22 @@ type ThrottleDecorator = <TThis, TArgs extends unknown[], Return extends void>(
 ) => void;
 
 /**
- * A Method Decorator that throttles calls being made to the decorated target. Ensuring that
- * calls are at most called once per defined time window
+ * Throttle is an Class Method Decorator, that is configured with the specified parameters.
+ * It throttle additional calls to the decorated method during the throttle window. It will
+ * only pass calls to the decorated method during the starting edge of the throttle window.
+ * The decorated method needs to have a void type return.
+ *
  * @param time value
  * @param unit of the provided timing
+ *
+ * ```ts
+ * class Example {
+ *      @Throttle(5, UnitOfTime.Millisecond)
+ *      public reportEvent(): void {
+ *          ...
+ *      }
+ * }
+ * ```
  */
 export function Throttle(time: number, unit: Exclude<UnitOfTime, 'Nanosecond'>): ThrottleDecorator {
     return <TThis, TArgs extends unknown[], Return extends void>(
