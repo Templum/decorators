@@ -33,14 +33,14 @@ class Test {
     @Measure('async', UnitOfTime.Second)
     public async willEventuallySucceed(): Promise<number> {
         this.spy();
-        await new Promise((resolve) => setTimeout(resolve, 100));
+        await new Promise((resolve) => setTimeout(resolve, 140));
         return 1
     }
 
     @Measure('async', UnitOfTime.Second)
     public async willEventuallyFail(): Promise<number> {
         this.spy();
-        await new Promise((resolve) => setTimeout(resolve, 100));
+        await new Promise((resolve) => setTimeout(resolve, 140));
         throw new Error('failed');
     }
 }
