@@ -14,10 +14,9 @@ type MeasureDecorator = <TThis, TArgs extends unknown[], Return>(
  * It tracks how long an call to the decorated method is taking, the observed value is than transformed into the wanted unit of time.
  * If hrtime is available it will be leveraged to record the timings, in environments where it is not available timestamps via Date Object will be used.
  *
- * @param label that will be used for broadcasting
- * @param unit in which the time should be broadcasted
- *
  * ```ts
+ * import { Measure, UnitOfTime } from "@templum/decorators";
+ *
  * class Measure {
  *      @Gauge('Backend', UnitOfTime.Second)
  *      public longRunningJob(): Promise<void> {
@@ -25,6 +24,10 @@ type MeasureDecorator = <TThis, TArgs extends unknown[], Return>(
  *      }
  * }
  * ```
+ *
+ * @param label that will be used for broadcasting
+ * @param unit in which the time should be broadcasted
+ *
  */
 export function Measure(label: string, unit: UnitOfTime): MeasureDecorator {
     return <TThis, TArgs extends unknown[], Return>(

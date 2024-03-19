@@ -13,10 +13,9 @@ type ThrottleDecorator = <TThis, TArgs extends unknown[], Return extends void>(
  * only pass calls to the decorated method during the starting edge of the throttle window.
  * The decorated method needs to have a void type return.
  *
- * @param time value
- * @param unit of the provided timing
- *
  * ```ts
+ * import { Throttle, UnitOfTime } from "@templum/decorators";
+ *
  * class Example {
  *      @Throttle(5, UnitOfTime.Millisecond)
  *      public reportEvent(): void {
@@ -24,6 +23,10 @@ type ThrottleDecorator = <TThis, TArgs extends unknown[], Return extends void>(
  *      }
  * }
  * ```
+ *
+ * @param time value
+ * @param unit of the provided timing
+ *
  */
 export function Throttle(time: number, unit: Exclude<UnitOfTime, 'Nanosecond'>): ThrottleDecorator {
     return <TThis, TArgs extends unknown[], Return extends void>(

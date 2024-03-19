@@ -13,9 +13,9 @@ type CounterDecorator = <TThis, TArgs extends unknown[], Return>(
  * It is a simple counter that increases everytime the method is called, it does not differentiate based on the outcome of the call.
  * The label will be part of the broadcasted metric and can be used to identify the origin.
  *
- * @param label that will be used for broadcasting
- *
  * ```ts
+ * import { CallCounter } from "@templum/decorators";
+ *
  * class Example {
  *      @CallCounter('Something')
  *      public doSomething(): Promise<void> {
@@ -23,6 +23,9 @@ type CounterDecorator = <TThis, TArgs extends unknown[], Return>(
  *      }
  * }
  * ```
+ *
+ * @param label that will be used for broadcasting
+ *
  */
 export function CallCounter(label: string): CounterDecorator {
     return <TThis, TArgs extends unknown[], Return>(
