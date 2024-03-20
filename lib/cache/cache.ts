@@ -119,10 +119,8 @@ export function Cache(config?: CacheConfig): CacheDecorator {
             }
 
             // Obtain Position and remove injected argument
-            const keyPosition = args[0][CACHE_KEY];
+            const key = args[0][CACHE_KEY];
             args.shift();
-
-            const key = args[keyPosition] as string;
 
             if (cache.has(key)) {
                 return cache.get(key)!;

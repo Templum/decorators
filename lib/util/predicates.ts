@@ -41,7 +41,7 @@ export function isHrTimeAvailable(): boolean {
     return false;
 }
 
-export function isCacheKey(obj: unknown): obj is { [CACHE_KEY]: number } {
+export function isCacheKey(obj: unknown): obj is { [CACHE_KEY]: string } {
     if (obj !== null && obj !== undefined && typeof obj === 'object') {
         return CACHE_KEY in obj;
     }
