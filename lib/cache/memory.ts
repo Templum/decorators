@@ -16,7 +16,7 @@ export interface ICache<TCached> {
      * Furthmore this method ensure {@link maxRecord} is not exceeded.
      * @param key used for caching
      * @param value that should be cached
-     * @param ttl ttl number that should be added to {@link Date.now} to obtain time until the entry is valid, ttl=-1 indicate record never expires
+     * @param ttl ttl number that should be added to {@link Date.now} to obtain time until the entry is valid, ttl=-1 indicates record never expires
      */
     store(key: string, value: TCached, ttl?: number): Promise<void> | void;
     /**
