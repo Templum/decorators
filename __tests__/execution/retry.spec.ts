@@ -1,147 +1,191 @@
 import { Retry, RetryStrategy } from "../../lib/execution/retry.js";
 import { UnitOfTime } from "../../lib/util/types.js";
 
-const ERROR_MESSAGE = 'Failed';
-
-class Test {
-    constructor(private spy: jest.Mock, private failed = 0){}
-
-    @Retry(error => error instanceof Error)
-    public callThatCanFail(shouldFail: boolean, onlyOnce = false): number {
-        this.spy();
-
-        if(shouldFail && !onlyOnce) {
-            throw new Error(ERROR_MESSAGE);
-        }
-
-        if (onlyOnce && this.failed === 0){
-            this.failed += 1;
-            throw new Error(ERROR_MESSAGE);
-        }
-
-        return 1
-    }
-
-    @Retry(error => error instanceof Error, {strategy: RetryStrategy.Delay, delay: 5, unit: UnitOfTime.Millisecond})
-    public async callAsyncThatCanFail(shouldFail: boolean, onlyOnce = false): Promise<number> {
-        this.spy();
-
-        if(shouldFail && !onlyOnce) {
-            throw new Error(ERROR_MESSAGE);
-        }
-
-        if (onlyOnce && this.failed === 0){
-            this.failed += 1;
-            throw new Error(ERROR_MESSAGE);
-        }
-
-        await new Promise((resolve) => setTimeout(resolve, 5));
-
-        return 1
-    }
-
-    @Retry(error => error instanceof Error, {strategy: RetryStrategy.Exponential, delay: 2, unit: UnitOfTime.Millisecond})
-    public callPromiseThatCanFail(shouldFail: boolean, onlyOnce = false): Promise<number> {
-        this.spy();
-
-        if(shouldFail && !onlyOnce) {
-            return Promise.reject(new Error(ERROR_MESSAGE));
-        }
-
-        if (onlyOnce && this.failed === 0){
-            this.failed += 1;
-            return Promise.reject(new Error(ERROR_MESSAGE));
-        }
-
-        return Promise.resolve(1)
-    }
-}
-
 describe('Retry Decorator', () => {
-    describe('Sync Method', () => {
+    describe('Sync', () => {
         test('should just return the result if call does not fail', async () => {
+            class Test {
+                constructor(private spy: jest.Mock) { }
+
+                @Retry(error => error instanceof Error)
+                public callThatCanFail(): number {
+                    this.spy();
+                    return 1
+                }
+            }
+
             const callRecorder = jest.fn();
             const target = new Test(callRecorder);
 
-            const result = target.callThatCanFail(false);
+            const result = target.callThatCanFail();
             expect(result).toEqual(1);
             expect(callRecorder).toHaveBeenCalledTimes(1);
         });
 
         test('should return result if retry was succesful', async () => {
+            class Test {
+                constructor(private spy: jest.Mock) { }
+
+                @Retry(error => error instanceof Error)
+                public callThatCanFail(): number {
+                    this.spy();
+                    return 1
+                }
+            }
+
             const callRecorder = jest.fn();
+            callRecorder.mockImplementationOnce(() => { throw new Error('Oops'); })
+
             const target = new Test(callRecorder);
 
-            const result = target.callThatCanFail(true, true);
+            const result = target.callThatCanFail();
             expect(result).toEqual(1);
             expect(callRecorder).toHaveBeenCalledTimes(2);
         });
 
         test('should return final error if all retries failed', async () => {
+            class Test {
+                constructor(private spy: jest.Mock) { }
+
+                @Retry(error => error instanceof Error)
+                public callThatCanFail(): number {
+                    this.spy();
+                    return 1
+                }
+            }
+
             const callRecorder = jest.fn();
+            callRecorder.mockImplementation(() => { throw new Error('Oops'); });
             const target = new Test(callRecorder);
 
-            expect(() => target.callThatCanFail(true)).toThrow(ERROR_MESSAGE);
+            expect(() => target.callThatCanFail()).toThrow('Oops');
             expect(callRecorder).toHaveBeenCalledTimes(1 + 3);
+        });
+
+        test('should ignore retry strategie as well as timeout', async () => {
+            class Test {
+                constructor(private spy: jest.Mock) { }
+
+                @Retry(error => error instanceof Error, { delay: 1, unit: UnitOfTime.Second, strategy: RetryStrategy.Delay })
+                public callThatCanFail(): number {
+                    this.spy();
+                    return 1
+                }
+            }
+
+            const callRecorder = jest.fn();
+            callRecorder.mockImplementation(() => { throw new Error('Oops'); });
+            const target = new Test(callRecorder);
+
+            const start = Date.now();
+            expect(() => target.callThatCanFail()).toThrow('Oops');
+            expect(callRecorder).toHaveBeenCalledTimes(1 + 3);
+            expect(Date.now() - start).toBeLessThan(3 * 1000);
         });
     });
 
-    describe('Async Method', () => {
+    describe('Async', () => {
         test('should just return the result if call does not fail', async () => {
+            class Test {
+                constructor(private spy: jest.Mock) { }
+
+                @Retry(error => error instanceof Error)
+                public async callThatCanFail(): Promise<number> {
+                    await this.spy();
+                    return 1
+                }
+            }
+
             const callRecorder = jest.fn();
             const target = new Test(callRecorder);
 
-            const result = await target.callAsyncThatCanFail(false);
+            const result = await target.callThatCanFail();
             expect(result).toEqual(1);
             expect(callRecorder).toHaveBeenCalledTimes(1);
         });
 
         test('should return result if retry was succesful', async () => {
+            class Test {
+                constructor(private spy: jest.Mock) { }
+
+                @Retry(error => error instanceof Error, { delay: 5, unit: UnitOfTime.Millisecond })
+                public async callThatCanFail(): Promise<number> {
+                    await this.spy();
+                    return 1
+                }
+            }
+
             const callRecorder = jest.fn();
+            callRecorder.mockRejectedValueOnce(new Error('Oops'))
             const target = new Test(callRecorder);
 
-            const result = await target.callAsyncThatCanFail(true, true);
+            const result = await target.callThatCanFail();
             expect(result).toEqual(1);
             expect(callRecorder).toHaveBeenCalledTimes(2);
         });
 
         test('should return final error if all retries failed', async () => {
+            class Test {
+                constructor(private spy: jest.Mock) { }
+
+                @Retry(error => error instanceof Error, { delay: 5, unit: UnitOfTime.Millisecond })
+                public async callThatCanFail(): Promise<number> {
+                    await this.spy();
+                    return 1
+                }
+            }
+
             const callRecorder = jest.fn();
+            callRecorder.mockRejectedValue(new Error('Oops'))
             const target = new Test(callRecorder);
 
-            await expect(async () => await target.callAsyncThatCanFail(true)).rejects.toThrow(ERROR_MESSAGE);
+            await expect(async () => await target.callThatCanFail()).rejects.toThrow('Oops');
             expect(callRecorder).toHaveBeenCalledTimes(1 + 3);
         });
-    });
 
-    describe('Promise Method', () => {
-        test('should just return the result if call does not fail', async () => {
+        test('should wait with exponential increasing delay', async () => {
+            class Test {
+                constructor(private spy: jest.Mock) { }
+
+                @Retry(error => error instanceof Error, { delay: 5, unit: UnitOfTime.Millisecond, strategy: RetryStrategy.Exponential })
+                public async callThatCanFail(): Promise<number> {
+                    await this.spy();
+                    return 1
+                }
+            }
+
             const callRecorder = jest.fn();
+            callRecorder.mockRejectedValue(new Error('Oops'))
             const target = new Test(callRecorder);
 
-            const result = await target.callPromiseThatCanFail(false);
-            expect(result).toEqual(1);
-            expect(callRecorder).toHaveBeenCalledTimes(1);
-        });
 
-        test('should return result if retry was succesful', async () => {
-            const callRecorder = jest.fn();
-            const target = new Test(callRecorder);
-
-            const result = await target.callPromiseThatCanFail(true, true);
-            expect(result).toEqual(1);
-            expect(callRecorder).toHaveBeenCalledTimes(2);
-        });
-
-        test('should return final error if all retries failed', async () => {
-            const callRecorder = jest.fn();
-            const target = new Test(callRecorder);
-
-            await expect(async () => await target.callPromiseThatCanFail(true)).rejects.toThrow(ERROR_MESSAGE);
+            const start = Date.now();
+            await expect(async () => await target.callThatCanFail()).rejects.toThrow('Oops');
             expect(callRecorder).toHaveBeenCalledTimes(1 + 3);
+            expect(Date.now() - start).toBeGreaterThan(3 * 5);
+        });
+
+        test('should wait with consistent delays', async () => {
+            class Test {
+                constructor(private spy: jest.Mock) { }
+
+                @Retry(error => error instanceof Error, { delay: 5, unit: UnitOfTime.Millisecond, strategy: RetryStrategy.Delay })
+                public async callThatCanFail(): Promise<number> {
+                    await this.spy();
+                    return 1
+                }
+            }
+
+            const callRecorder = jest.fn();
+            callRecorder.mockRejectedValue(new Error('Oops'))
+            const target = new Test(callRecorder);
+
+            const start = Date.now();
+            await expect(async () => await target.callThatCanFail()).rejects.toThrow('Oops');
+            expect(callRecorder).toHaveBeenCalledTimes(1 + 3);
+            expect(Date.now() - start).toBeLessThan(3 * 5);
         });
     });
-
 });
 
 
