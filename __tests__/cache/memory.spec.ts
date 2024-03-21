@@ -16,7 +16,7 @@ describe('InMemoryCache', () => {
     describe('store', () => {
 
         beforeAll(() => {
-            jest.useFakeTimers({now: 10000});
+            jest.useFakeTimers({ now: 10000 });
         });
 
         afterAll(() => {
@@ -25,7 +25,7 @@ describe('InMemoryCache', () => {
 
         it('should store value with provided ttl', async () => {
             const target = new InMemoryCache<number>();
-            
+
             const storeRecorder = jest.spyOn((target as any).cache as Map<string, number>, 'set')
 
             target.store('cache', 1337, 100);
