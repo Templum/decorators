@@ -32,8 +32,8 @@ export const CACHE_KEY = Symbol.for('Cache_Key');
 
 /**
  * CacheKey is an Class Method Decorator, that expects the position of the parameter that should be used for caching.
- * It is maint to be used only in combination with {@link Cache}, if it is not decorating a Cache decorated method with will perform NO-OP.
- * If the position provided is outside of the parameter range it will perform NO-OP, if the provieed key is no string it will also perform NO-OP.
+ * It is ment to be used only in combination with {@link Cache}, if it is not decorating a Cache decorated method it will perform NO-OP.
+ * If the position provided is outside of the parameter range it will perform NO-OP, also if the specified parameter is no string it will perform NO-OP.
  *
  * ```ts
  * import { CacheKey, Cache, UnitOfTime } from "@templum/decorators";
@@ -74,12 +74,12 @@ export function CacheKey(position: number): CacheDecorator {
 }
 
 /**
- * Retry is an Class Method Decorator, that is configured using an configuration parameter.
+ * Cache is an Class Method Decorator, that is configured using an configuration parameter.
  * By default it will leverage an memory based cache. It relies on {@link CacheKey} to know
- * which parameter can be used as a cache key.
+ * which parameter should be used as a cache key.
  * For more details on how the underlaying cache operates checkout {@link InMemoryCache<TCached>}.
  *
- * Please be aware that errors are not cached.
+ * Please be aware if CacheKey is not specified or incorrectly configured, it will not modify execution at all.
  *
  * ```ts
  * import { CacheKey, Cache, UnitOfTime } from "@templum/decorators";
