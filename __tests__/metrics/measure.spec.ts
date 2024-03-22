@@ -3,53 +3,27 @@ import { Measure } from "../../lib/metrics/measure.js";
 import { MetricBroadcaster } from "../../lib/metrics/broadcaster.js";
 import { Metric, UnitOfTime } from "../../lib/util/types.js";
 
-class Test {
-    constructor(private spy: jest.Mock) {}
-
-    @Measure('sync', UnitOfTime.Nanosecond)
-    public willSucceed(): number {
-        this.spy();
-
-        let sum = 0;
-        for (let i = 0; i < 100000; i++) {
-            sum += i * i;
-        }
-
-        return 1
-    }
-
-    @Measure('sync', UnitOfTime.Nanosecond)
-    public willFail(): number {
-        this.spy();
-
-        let sum = 0;
-        for (let i = 0; i < 100000; i++) {
-            sum += i * i;
-        }
-
-        throw new Error('failed');
-    }
-
-    @Measure('async', UnitOfTime.Second)
-    public async willEventuallySucceed(): Promise<number> {
-        this.spy();
-        await new Promise((resolve) => setTimeout(resolve, 140));
-        return 1
-    }
-
-    @Measure('async', UnitOfTime.Second)
-    public async willEventuallyFail(): Promise<number> {
-        this.spy();
-        await new Promise((resolve) => setTimeout(resolve, 140));
-        throw new Error('failed');
-    }
-}
-
 describe('Measure Decorator', () => {
     const broadcaster = MetricBroadcaster.getInstance();
 
     describe('Sync Calls', () => {
-        test('should record timing for succesfull calls', async () => {
+        test('should record timing for successfull calls', async () => {
+            class Test {
+                constructor(private spy: jest.Mock) { }
+
+                @Measure('success', UnitOfTime.Nanosecond)
+                public willSucceed(): number {
+                    this.spy();
+
+                    let sum = 0;
+                    for (let i = 0; i < 100000; i++) {
+                        sum += i * i;
+                    }
+
+                    return 1
+                }
+            }
+
             const callRecorder = jest.fn();
             const target = new Test(callRecorder);
 
@@ -62,14 +36,30 @@ describe('Measure Decorator', () => {
             const result = target.willSucceed();
             expect(result).toEqual(1)
             expect(callRecorder).toHaveBeenCalled();
-            
+
             const metric = await broadcasted;
             expect(metric).toBeDefined()
-            expect(metric.label).toEqual('sync');
+            expect(metric.label).toEqual('success');
             expect(metric.value).toBeGreaterThan(1);
         });
 
         test('should record timing for failing calls', async () => {
+            class Test {
+                constructor(private spy: jest.Mock) { }
+
+                @Measure('failure', UnitOfTime.Nanosecond)
+                public willFail(): number {
+                    this.spy();
+
+                    let sum = 0;
+                    for (let i = 0; i < 100000; i++) {
+                        sum += i * i;
+                    }
+
+                    throw new Error('failed');
+                }
+            }
+
             const callRecorder = jest.fn();
             const target = new Test(callRecorder);
 
@@ -81,16 +71,32 @@ describe('Measure Decorator', () => {
 
             expect(() => target.willFail()).toThrow('failed');
             expect(callRecorder).toHaveBeenCalled();
-            
+
             const metric = await broadcasted;
             expect(metric).toBeDefined()
-            expect(metric.label).toEqual('sync');
+            expect(metric.label).toEqual('failure');
             expect(metric.value).toBeGreaterThan(1);
         });
     });
 
     describe('Async Calls', () => {
         test('should record timing for succesfull calls', async () => {
+            class Test {
+                constructor(private spy: jest.Mock) { }
+
+                @Measure('success', UnitOfTime.Nanosecond)
+                public async willSucceed(): Promise<number> {
+                    this.spy();
+
+                    let sum = 0;
+                    for (let i = 0; i < 100000; i++) {
+                        sum += i * i;
+                    }
+
+                    return 1
+                }
+            }
+
             const callRecorder = jest.fn();
             const target = new Test(callRecorder);
 
@@ -100,17 +106,33 @@ describe('Measure Decorator', () => {
                 });
             });
 
-            const result = await target.willEventuallySucceed();
+            const result = await target.willSucceed();
             expect(result).toEqual(1)
             expect(callRecorder).toHaveBeenCalled();
-            
+
             const metric = await broadcasted;
             expect(metric).toBeDefined()
-            expect(metric.label).toEqual('async');
+            expect(metric.label).toEqual('success');
             expect(metric.value).toBeGreaterThanOrEqual(0.1);
         });
-        
+
         test('should record timing for failing calls', async () => {
+            class Test {
+                constructor(private spy: jest.Mock) { }
+
+                @Measure('failure', UnitOfTime.Nanosecond)
+                public async willFail(): Promise<number> {
+                    this.spy();
+
+                    let sum = 0;
+                    for (let i = 0; i < 100000; i++) {
+                        sum += i * i;
+                    }
+
+                    throw new Error('failed')
+                }
+            }
+
             const callRecorder = jest.fn();
             const target = new Test(callRecorder);
 
@@ -120,18 +142,34 @@ describe('Measure Decorator', () => {
                 });
             });
 
-            await expect(async () => target.willEventuallyFail()).rejects.toThrow('failed')
+            await expect(async () => target.willFail()).rejects.toThrow('failed')
             expect(callRecorder).toHaveBeenCalled();
-            
+
             const metric = await broadcasted;
             expect(metric).toBeDefined()
-            expect(metric.label).toEqual('async');
+            expect(metric.label).toEqual('failure');
             expect(metric.value).toBeGreaterThanOrEqual(0.1);
         });
     });
 
     describe('hrtime vs date', () => {
         let hrSwitchMock: jest.SpyInstance<boolean, [], any>;
+
+        class Test {
+            constructor(private spy: jest.Mock) { }
+
+            @Measure('success', UnitOfTime.Nanosecond)
+            public async willSucceed(): Promise<number> {
+                this.spy();
+
+                let sum = 0;
+                for (let i = 0; i < 100000; i++) {
+                    sum += i * i;
+                }
+
+                return 1
+            }
+        }
 
         beforeEach(() => {
             hrSwitchMock = jest.spyOn(mod, 'isHrTimeAvailable');
@@ -152,18 +190,18 @@ describe('Measure Decorator', () => {
                 });
             });
 
-            const result = target.willSucceed();
+            const result = await target.willSucceed();
             expect(result).toEqual(1)
             expect(callRecorder).toHaveBeenCalled();
-            
+
             const metric = await broadcasted;
             expect(metric).toBeDefined()
-            expect(metric.label).toEqual('sync');
+            expect(metric.label).toEqual('success');
             expect(metric.value).toBeGreaterThan(1);
             expect(hrSwitchMock).toHaveBeenCalled();
         });
 
-        test('should use Date.now if hrtime is not available', async () =>  {
+        test('should use Date.now if hrtime is not available', async () => {
             const callRecorder = jest.fn();
             hrSwitchMock.mockReturnValue(false);
             const target = new Test(callRecorder);
@@ -174,13 +212,13 @@ describe('Measure Decorator', () => {
                 });
             });
 
-            const result = target.willSucceed();
+            const result = await target.willSucceed();
             expect(result).toEqual(1)
             expect(callRecorder).toHaveBeenCalled();
-            
+
             const metric = await broadcasted;
             expect(metric).toBeDefined()
-            expect(metric.label).toEqual('sync');
+            expect(metric.label).toEqual('success');
             expect(metric.value).toBeGreaterThanOrEqual(0);
             expect(hrSwitchMock).toHaveBeenCalled();
         });
