@@ -132,7 +132,8 @@ export function Retry(isRetrieable: (error: Error) => boolean, config: Partial<R
                         }
 
                         if (strategy === RetryStrategy.Exponential) {
-                            await new Promise<void>((resolve) => setTimeout(resolve, delayInMs * (attempt + 1)));
+                            const exponentialDelay = delayInMs * (attempt + 1);
+                            await new Promise<void>((resolve) => setTimeout(resolve, exponentialDelay));
                         }
                     }
                 }
