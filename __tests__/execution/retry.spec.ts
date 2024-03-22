@@ -162,7 +162,7 @@ describe('Retry Decorator', () => {
             const start = Date.now();
             await expect(async () => await target.callThatCanFail()).rejects.toThrow('Oops');
             expect(callRecorder).toHaveBeenCalledTimes(1 + 3);
-            expect(Date.now() - start).toBeGreaterThan(3 * 5);
+            expect(Date.now() - start).toBeGreaterThanOrEqual(3 * 5);
         });
 
         test('should wait with consistent delays', async () => {
@@ -183,7 +183,7 @@ describe('Retry Decorator', () => {
             const start = Date.now();
             await expect(async () => await target.callThatCanFail()).rejects.toThrow('Oops');
             expect(callRecorder).toHaveBeenCalledTimes(1 + 3);
-            expect(Date.now() - start).toBeLessThan(3 * 5);
+            expect(Date.now() - start).toBeLessThanOrEqual(2 * 5 + 2);
         });
     });
 });
