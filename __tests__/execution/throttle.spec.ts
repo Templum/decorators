@@ -2,7 +2,7 @@ import { Throttle } from "../../lib/execution/throttle.js";
 import { UnitOfTime } from "../../lib/util/types.js";
 
 class Test {
-    constructor(private spy: jest.Mock){}
+    constructor(private spy: jest.Mock) { }
 
     @Throttle(5, UnitOfTime.Millisecond)
     public increment(): void {
@@ -16,7 +16,7 @@ describe('Throttle Decorator', () => {
         const target = new Test(callRecorder);
 
         target.increment();
-        expect(callRecorder).toHaveBeenCalledTimes(1); 
+        expect(callRecorder).toHaveBeenCalledTimes(1);
     });
 
     test('should block additional calls while in throttle window', async () => {
@@ -29,7 +29,7 @@ describe('Throttle Decorator', () => {
         target.increment();
         target.increment();
 
-        expect(callRecorder).toHaveBeenCalledTimes(1); 
+        expect(callRecorder).toHaveBeenCalledTimes(1);
     });
 
     test('should allow a call after throttle window passed', async () => {
@@ -40,13 +40,13 @@ describe('Throttle Decorator', () => {
         target.increment();
         target.increment();
 
-        expect(callRecorder).toHaveBeenCalledTimes(1); 
+        expect(callRecorder).toHaveBeenCalledTimes(1);
         await new Promise((resolve) => setTimeout(resolve, 10));
 
         target.increment();
         target.increment();
         target.increment();
 
-        expect(callRecorder).toHaveBeenCalledTimes(2); 
+        expect(callRecorder).toHaveBeenCalledTimes(2);
     });
 });

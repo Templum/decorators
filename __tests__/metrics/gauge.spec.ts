@@ -1,65 +1,36 @@
 import { Gauge } from "../../lib/metrics/gauge.js";
 import { MetricBroadcaster } from "../../lib/metrics/broadcaster.js";
-import { Metric } from "../../lib/util/types.js";
-import { after } from "node:test";
-
-class Test {
-    constructor(private spy: jest.Mock) {}
-
-    @Gauge('sync_succes')
-    public willSucceed(): number {
-        this.spy();
-
-        let sum = 0;
-        for (let i = 0; i < 100000; i++) {
-            sum += i * i;
-        }
-
-        return 1
-    }
-
-    @Gauge('sync_failure')
-    public willFail(): number {
-        this.spy();
-
-        let sum = 0;
-        for (let i = 0; i < 100000; i++) {
-            sum += i * i;
-        }
-
-        throw new Error('failed');
-    }
-
-    @Gauge('async_success')
-    public async willEventuallySucceed(): Promise<number> {
-        this.spy();
-        await new Promise((resolve) => setTimeout(resolve, 10));
-        return 1
-    }
-
-    @Gauge('async_failure')
-    public async willEventuallyFail(): Promise<number> {
-        this.spy();
-        await new Promise((resolve) => setTimeout(resolve, 10));
-        throw new Error('failed');
-    }
-}
 
 describe('Gauge Decorator', () => {
     const broadcaster = MetricBroadcaster.getInstance();
 
-    after(() => {
+    afterAll(() => {
         broadcaster.removeAllListeners('metric');
     });
 
     describe('Sync', () => {
         test('should record inflight calls that end in success', async () => {
+            class Test {
+                constructor(private spy: jest.Mock) { }
+                @Gauge('success')
+                public willSucceed(): number {
+                    this.spy();
+
+                    let sum = 0;
+                    for (let i = 0; i < 100000; i++) {
+                        sum += i * i;
+                    }
+
+                    return 1
+                }
+            }
+
             const callRecorder = jest.fn();
             const target = new Test(callRecorder);
 
             const history: number[] = [];
             broadcaster.on('metric', (metric) => {
-                if (metric.label === 'sync_succes') {
+                if (metric.label === 'success') {
                     history.push(metric.value);
                 }
             });
@@ -73,12 +44,27 @@ describe('Gauge Decorator', () => {
         });
 
         test('should record inflight calls that end in failure', async () => {
+            class Test {
+                constructor(private spy: jest.Mock) { }
+                @Gauge('failure')
+                public willFail(): number {
+                    this.spy();
+
+                    let sum = 0;
+                    for (let i = 0; i < 100000; i++) {
+                        sum += i * i;
+                    }
+
+                    throw new Error('failed');
+                }
+            }
+
             const callRecorder = jest.fn();
             const target = new Test(callRecorder);
 
             const history: number[] = [];
             broadcaster.on('metric', (metric) => {
-                if (metric.label === 'sync_failure') {
+                if (metric.label === 'failure') {
                     history.push(metric.value);
                 }
             });
@@ -93,17 +79,27 @@ describe('Gauge Decorator', () => {
 
     describe('Async', () => {
         test('should record inflight calls that end in success', async () => {
+            class Test {
+                constructor(private spy: jest.Mock) { }
+                @Gauge('success')
+                public async willSucceed(): Promise<number> {
+                    this.spy();
+                    await new Promise((resolve) => setTimeout(resolve, 10));
+                    return 1
+                }
+            }
+
             const callRecorder = jest.fn();
             const target = new Test(callRecorder);
 
             const history: number[] = [];
             broadcaster.on('metric', (metric) => {
-                if (metric.label === 'async_success') {
+                if (metric.label === 'success') {
                     history.push(metric.value);
                 }
             });
 
-            const result = await target.willEventuallySucceed();
+            const result = await target.willSucceed();
             expect(result).toEqual(1);
             expect(callRecorder).toHaveBeenCalled();
 
@@ -112,17 +108,28 @@ describe('Gauge Decorator', () => {
         });
 
         test('should record inflight calls that end in failure', async () => {
+            class Test {
+                constructor(private spy: jest.Mock) { }
+                @Gauge('failure')
+                public async willFail(): Promise<number> {
+                    this.spy();
+                    await new Promise((resolve) => setTimeout(resolve, 10));
+                    throw new Error('failed');
+                }
+            }
+
+
             const callRecorder = jest.fn();
             const target = new Test(callRecorder);
 
             const history: number[] = [];
             broadcaster.on('metric', (metric) => {
-                if (metric.label === 'async_failure') {
+                if (metric.label === 'failure') {
                     history.push(metric.value);
                 }
             });
 
-            await expect(async () => await target.willEventuallyFail()).rejects.toThrow('failed');
+            await expect(async () => await target.willFail()).rejects.toThrow('failed');
             expect(callRecorder).toHaveBeenCalled();
 
             expect(history.length).toBeGreaterThanOrEqual(2);

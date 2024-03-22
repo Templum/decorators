@@ -13,9 +13,9 @@ type GaugeDecorator = <TThis, TArgs extends unknown[], Return>(
  * It tracks all currently "inflight" calls to the decorated method. Meaning the counted value will increase at the start of the call
  * and will decrease once execution finished.
  *
- * @param label that will be used for broadcasting
- *
  * ```ts
+ * import { Gauge } from "@templum/decorators";
+ *
  * class Example {
  *      @Gauge('Backend')
  *      public callBackend(): Promise<void> {
@@ -23,6 +23,9 @@ type GaugeDecorator = <TThis, TArgs extends unknown[], Return>(
  *      }
  * }
  * ```
+ *
+ * @param label that will be used for broadcasting
+ *
  */
 export function Gauge(label: string): GaugeDecorator {
     return <TThis, TArgs extends unknown[], Return>(

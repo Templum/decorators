@@ -2,12 +2,18 @@ import { isPromiseLike } from '../util/predicates.js';
 import { convertFrom } from '../util/transfomers.js';
 import { UnitOfTime } from '../util/types.js';
 
+type RetryDecorator = <TThis, TArgs extends unknown[], Return>(
+    // eslint-disable-next-line @typescript-eslint/ban-types
+    target: Function,
+    ctx: ClassMethodDecoratorContext<TThis, (this: TThis, ...args: TArgs) => Return>,
+) => void;
+
 /**
  * Retry Strategy for more details on the functions look at the individual members
  */
 export enum RetryStrategy {
     /**
-     * Calls will be made with a expontential growing delay waiting between attempts.
+     * Calls will be made with a expontential growing delay between attempts.
      * This is useable by functions that return promise or are async. Sync methods can not use it.
      */
     Exponential,
@@ -17,7 +23,7 @@ export enum RetryStrategy {
      */
     Delay,
     /**
-     * Calls will be made sequential without explicit waiting time between them.
+     * Calls will be made sequential without any delay between attempts.
      * Sync methods only support this strategy as Exponential would change the return type.
      */
     Sequential,
@@ -25,31 +31,35 @@ export enum RetryStrategy {
 
 /**
  * Allows to configure the retry behaviour
+ *
+ * ```ts
+ *const defaultConfig: RetryConfig = {
+ *    retries: 3,
+ *    strategy: RetryStrategy.Delay,
+ *    delay: 100,
+ *    unit: UnitOfTime.Millisecond,
+ *};
+ * ```
+ *
  */
 export type RetryConfig = {
     /**
-     * Defaults to 3
+     * Specifies the retries that should be made
      */
     retries: number;
     /**
-     * Defaults to RetryStrategy.Delay, only relevant for Promise/Async Methods
+     * Specifies in which way retries should be attempted
      */
     strategy: RetryStrategy;
     /**
-     * Defaults to 100, only relevant with proper RetryStrategy
+     * The base delay, get's ignored for {@link RetryStrategy.Sequential}
      */
     delay: number;
     /**
-     * Default to MS, only relevant with proper RetryStrategy
+     * Unit of the delay, does not support Nanoseconds
      */
     unit: Omit<UnitOfTime, 'Nanosecond'>;
 };
-
-type RetryDecorator = <TThis, TArgs extends unknown[], Return>(
-    // eslint-disable-next-line @typescript-eslint/ban-types
-    target: Function,
-    ctx: ClassMethodDecoratorContext<TThis, (this: TThis, ...args: TArgs) => Return>,
-) => void;
 
 const defaultConfig: RetryConfig = {
     retries: 3,
@@ -63,11 +73,11 @@ const defaultConfig: RetryConfig = {
  * It will attempt retries if the decorated method raised an retrtieable error. Deciding if an error is fatal or retrieable
  * happens using the provided predicate. How it will retry can be configured.
  *
- * Please be aware that sync method may only leverage the {@link RetryStrategy.Sequential} Strategie in order to ensure the return type is not altered.
- * @param isRetrieable method that is called with the catched error to determine if it can be retried
- * @param config for the retry behaviour, default is 3 retries with fixed delay of 100ms
+ * Please be aware that sync method may only leverage the {@link RetryStrategy.Sequential} in order to ensure the return type is not altered.
  *
  * ```ts
+ * import { Retry, RetryStrategy, UnitOfTime } from "@templum/decorators";
+ *
  * class Example {
  *      @Retry(
  *          error => error instanceof Error,
@@ -78,6 +88,10 @@ const defaultConfig: RetryConfig = {
  *      }
  * }
  * ```
+ *
+ * @param isRetrieable method that is called with the catched error to determine if it can be retried
+ * @param config for the retry behaviour, default is 3 retries with fixed delay of 100ms
+ *
  */
 export function Retry(isRetrieable: (error: Error) => boolean, config: Partial<RetryConfig> = {}): RetryDecorator {
     const { retries, delay, unit, strategy } = Object.assign(defaultConfig, config);
@@ -118,7 +132,8 @@ export function Retry(isRetrieable: (error: Error) => boolean, config: Partial<R
                         }
 
                         if (strategy === RetryStrategy.Exponential) {
-                            await new Promise<void>((resolve) => setTimeout(resolve, delayInMs * (attempt + 1)));
+                            const exponentialDelay = delayInMs * (attempt + 1);
+                            await new Promise<void>((resolve) => setTimeout(resolve, exponentialDelay));
                         }
                     }
                 }

@@ -12,10 +12,9 @@ type DebounceDecorator = <TThis, TArgs extends unknown[], Return extends void>(
  * It debounces additional calls to the decorated method during the debounce window. Hence
  * the decorated method needs to have a void type return.
  *
- * @param time value
- * @param unit of the provided timing
- *
  * ```ts
+ * import { Debounce, UnitOfTime } from "@templum/decorators";
+ *
  * class Example {
  *      @Debounce(5, UnitOfTime.Millisecond)
  *      public reportEvent(): void {
@@ -23,6 +22,10 @@ type DebounceDecorator = <TThis, TArgs extends unknown[], Return extends void>(
  *      }
  * }
  * ```
+ *
+ * @param time value
+ * @param unit of the provided timing
+ *
  */
 export function Debounce(time: number, unit: Exclude<UnitOfTime, 'Nanosecond'>): DebounceDecorator {
     return <TThis, TArgs extends unknown[], Return extends void>(

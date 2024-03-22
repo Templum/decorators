@@ -2,46 +2,30 @@ import { CallCounter, Counter } from "../../lib/metrics/counter.js";
 import { MetricBroadcaster } from "../../lib/metrics/broadcaster.js";
 import { Metric } from "../../lib/util/types.js";
 
-class CallTest {
-    constructor(private spy: jest.Mock) {}
-
-    @CallCounter('success')
-    public willSucceed(addTwo: number): number {
-        this.spy();
-        return addTwo + 2;
-    }
-
-    @CallCounter('failure')
-    public willFail(addThree: number): number {
-        this.spy();
-        throw new Error('failed');
-    }
-}
-
-class CounterTest {
-    constructor(private spy: jest.Mock) {}
-
-    @Counter('sync')
-    public syncCall(addTwo: number): number {
-        this.spy();
-        return addTwo + 2;
-    }
-
-    @Counter('async')
-    public async asyncCall(addTwo: number): Promise<number> {
-        await this.spy();
-        return addTwo + 2;
-    }
-}
-
 describe('CallCounter Decorator', () => {
+    class Test {
+        constructor(private spy: jest.Mock) { }
+
+        @CallCounter('success')
+        public willSucceed(addTwo: number): number {
+            this.spy();
+            return addTwo + 2;
+        }
+
+        @CallCounter('failure')
+        public willFail(addThree: number): number {
+            this.spy();
+            throw new Error('failed');
+        }
+    }
+
     const broadcaster = MetricBroadcaster.getInstance();
 
     test('should increase counter for successful calls', async () => {
         const callRecorder = jest.fn();
-        const target = new CallTest(callRecorder);
+        const target = new Test(callRecorder);
 
-         const broadcasted = new Promise<Metric<number>>((resolve) => {
+        const broadcasted = new Promise<Metric<number>>((resolve) => {
             broadcaster.once('metric', (metric) => {
                 resolve(metric);
             });
@@ -50,7 +34,7 @@ describe('CallCounter Decorator', () => {
         const result = target.willSucceed(2);
         expect(result).toEqual(4);
         expect(callRecorder).toHaveBeenCalled();
-        
+
         const metric = await broadcasted;
         expect(metric).toBeDefined()
         expect(metric.label).toEqual('success');
@@ -59,7 +43,7 @@ describe('CallCounter Decorator', () => {
 
     test('should increase counter for failing calls', async () => {
         const callRecorder = jest.fn();
-        const target = new CallTest(callRecorder);
+        const target = new Test(callRecorder);
 
         const broadcasted = new Promise<Metric<number>>((resolve) => {
             broadcaster.once('metric', (metric) => {
@@ -69,7 +53,7 @@ describe('CallCounter Decorator', () => {
 
         expect(() => target.willFail(2)).toThrow('failed');
         expect(callRecorder).toHaveBeenCalled();
-        
+
         const metric = await broadcasted;
         expect(metric).toBeDefined()
         expect(metric.label).toEqual('failure');
@@ -82,8 +66,19 @@ describe('Counter Decorator', () => {
 
     describe('Sync', () => {
         test('should increase success counter for successfull calls', async () => {
+            class Test {
+
+                constructor(private spy: jest.Mock) { }
+
+                @Counter('sync')
+                public willSucceed(addTwo: number): number {
+                    this.spy();
+                    return addTwo + 2;
+                }
+            }
+
             const callRecorder = jest.fn();
-            const target = new CounterTest(callRecorder);
+            const target = new Test(callRecorder);
 
             const broadcasted = new Promise<Metric<number>>((resolve) => {
                 broadcaster.once('metric', (metric) => {
@@ -91,10 +86,10 @@ describe('Counter Decorator', () => {
                 });
             });
 
-            const result = target.syncCall(2);
+            const result = target.willSucceed(2);
             expect(result).toEqual(4);
             expect(callRecorder).toHaveBeenCalled();
-            
+
             const metric = await broadcasted;
             expect(metric).toBeDefined()
             expect(metric.label).toEqual('sync_success');
@@ -102,8 +97,19 @@ describe('Counter Decorator', () => {
         });
 
         test('should increase failure counter for failed calls', async () => {
-            const callRecorder = jest.fn(() => { throw new Error('Oops') });
-            const target = new CounterTest(callRecorder);
+            class Test {
+
+                constructor(private spy: jest.Mock) { }
+
+                @Counter('sync')
+                public willFail(addTwo: number): number {
+                    this.spy();
+                    throw new Error('Oops')
+                }
+            }
+
+            const callRecorder = jest.fn();
+            const target = new Test(callRecorder);
 
             const broadcasted = new Promise<Metric<number>>((resolve) => {
                 broadcaster.once('metric', (metric) => {
@@ -111,9 +117,9 @@ describe('Counter Decorator', () => {
                 });
             });
 
-            expect(() => target.syncCall(2)).toThrow('Oops');
+            expect(() => target.willFail(2)).toThrow('Oops');
             expect(callRecorder).toHaveBeenCalled();
-            
+
             const metric = await broadcasted;
             expect(metric).toBeDefined()
             expect(metric.label).toEqual('sync_failure');
@@ -123,8 +129,19 @@ describe('Counter Decorator', () => {
 
     describe('Async', () => {
         test('should increase success counter for successfull calls', async () => {
+            class Test {
+
+                constructor(private spy: jest.Mock) { }
+
+                @Counter('async')
+                public async willSucceed(addTwo: number): Promise<number> {
+                    this.spy();
+                    return addTwo + 2;
+                }
+            }
+
             const callRecorder = jest.fn();
-            const target = new CounterTest(callRecorder);
+            const target = new Test(callRecorder);
 
             const broadcasted = new Promise<Metric<number>>((resolve) => {
                 broadcaster.once('metric', (metric) => {
@@ -132,10 +149,10 @@ describe('Counter Decorator', () => {
                 });
             });
 
-            const result = await target.asyncCall(2);
+            const result = await target.willSucceed(2);
             expect(result).toEqual(4);
             expect(callRecorder).toHaveBeenCalled();
-            
+
             const metric = await broadcasted;
             expect(metric).toBeDefined()
             expect(metric.label).toEqual('async_success');
@@ -143,10 +160,19 @@ describe('Counter Decorator', () => {
         });
 
         test('should increase failure counter for failed calls', async () => {
-            const callRecorder = jest.fn();
-            const target = new CounterTest(callRecorder);
+            class Test {
 
-            callRecorder.mockRejectedValueOnce(new Error('Oops'));
+                constructor(private spy: jest.Mock) { }
+
+                @Counter('async')
+                public async willFail(addTwo: number): Promise<number> {
+                    this.spy();
+                    throw new Error('Oops');
+                }
+            }
+
+            const callRecorder = jest.fn();
+            const target = new Test(callRecorder);
 
             const broadcasted = new Promise<Metric<number>>((resolve) => {
                 broadcaster.once('metric', (metric) => {
@@ -154,9 +180,9 @@ describe('Counter Decorator', () => {
                 });
             });
 
-            await expect(async () => await target.asyncCall(2)).rejects.toThrow('Oops');
+            await expect(async () => await target.willFail(2)).rejects.toThrow('Oops');
             expect(callRecorder).toHaveBeenCalled();
-            
+
             const metric = await broadcasted;
             expect(metric).toBeDefined()
             expect(metric.label).toEqual('async_failure');
