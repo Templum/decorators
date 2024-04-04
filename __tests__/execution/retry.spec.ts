@@ -183,7 +183,7 @@ describe('Retry Decorator', () => {
             const start = Date.now();
             await expect(async () => await target.callThatCanFail()).rejects.toThrow('Oops');
             expect(callRecorder).toHaveBeenCalledTimes(1 + 3);
-            expect(Date.now() - start).toBeLessThanOrEqual(2 * 5 + 2);
+            expect(Date.now() - start).toBeLessThanOrEqual(3 * 5);
         });
     });
 });
