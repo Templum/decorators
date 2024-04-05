@@ -3,6 +3,7 @@ on:
   workflow_dispatch:
 permissions:
   contents: write
+  pull-requests: write
 jobs:
   changelog:
     runs-on: ubuntu-latest
@@ -10,7 +11,12 @@ jobs:
       - uses: actions/checkout@v4
         with:
           fetch-depth: 0
-      - name: "Generate Changelog"
-        uses: sercanuste/gitmoji-changelog-action@v1
+      - name: Generate Changelog
+        uses: Templum/gitmoji-changelog@main
+        
+      - name: Create Pull Request
+        uses: peter-evans/create-pull-request@v6
         with:
-          add_author: true
+          branch: feature/changelog-update
+          title: ":memo: Update Changelog for ${{ steps.outputs.for-version }}"
+          commit-message: ":memo: Update Changelog for ${{ steps.outputs.for-version }}"
