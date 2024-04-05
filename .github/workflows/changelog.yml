@@ -13,7 +13,8 @@ jobs:
           fetch-depth: 0
       - name: Generate Changelog
         uses: Templum/gitmoji-changelog@main
-        
+      - name: Debug GIT Log
+        run: git log v0.1.0..HEAD --pretty=format:"%h %s %an [%ae]"
       - name: Create Pull Request
         uses: peter-evans/create-pull-request@v6
         with:
