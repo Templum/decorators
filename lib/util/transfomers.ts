@@ -1,10 +1,10 @@
 import { canBeNumber, isBigint } from './predicates.js';
 import { UnitOfTime } from './types.js';
 
-const NS_PER_NS = 1 as const;
-const NS_PER_SEC = 1e9 as const;
-const NS_PER_MS = 1e6 as const;
-const NS_PER_MIN = 6e10 as const;
+const NS_PER_NS = 1;
+const NS_PER_SEC = 1e9;
+const NS_PER_MS = 1e6;
+const NS_PER_MIN = 6e10;
 
 function getFactor(targetUnit: UnitOfTime): typeof NS_PER_NS | typeof NS_PER_SEC | typeof NS_PER_MS | typeof NS_PER_MIN {
     switch (targetUnit) {
