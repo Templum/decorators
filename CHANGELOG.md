@@ -1,5 +1,14 @@
 # Changelog
 
+<a name="0.2.0"></a>
+## 0.2.0 (2024-04-05)
+
+### Changed
+
+- ⬆️ Bump @typescript-eslint/parser from 7.3.1 to 7.5.0 (#23) [[e474add](./commit/e474add32a54757f4bee82a4adf3bd60cd8d9dfb)] (by dependabot[bot])
+
+
+
 <a name="0.1.0"></a>
 ## 0.1.0 (2024-03-15)
 
