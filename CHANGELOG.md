@@ -1,5 +1,14 @@
 # Changelog
 
+<a name="0.2.0"></a>
+## 0.2.0 (2024-04-05)
+
+### Changed
+
+- ⬆️ Bump @types/node from 20.11.30 to 20.12.4 (#21) [[7c9ce4b](./commit/7c9ce4b3d95b8de24a8a6e88fb27c09fe5752346)] (by dependabot[bot])
+
+
+
 <a name="0.1.0"></a>
 ## 0.1.0 (2024-03-15)
 
