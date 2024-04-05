@@ -1,5 +1,18 @@
 # Changelog
 
+<a name="0.2.0"></a>
+## 0.2.0 (2024-04-05)
+
+### Changed
+
+- ⬆️ Bump @typescript-eslint/eslint-plugin from 7.3.1 to 7.5.0 (#20) [[43fbd50](./commit/43fbd50a7da55c89099cacf30209d381c8424f1b)] (by dependabot[bot])
+
+### CI/CD
+
+- 👷 Working on changelog flow (#24) [[187d5a0](./commit/187d5a01c2a92c73e167cfc56c5caf2094d4d8ae)] (by Simon)
+
+
+
 <a name="0.1.0"></a>
 ## 0.1.0 (2024-03-15)
 
