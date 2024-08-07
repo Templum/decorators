@@ -1,5 +1,5 @@
 type OnceDecorator = <TThis, TArgs extends unknown[], Return extends void>(
-    // eslint-disable-next-line @typescript-eslint/ban-types
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-function-type
     target: Function,
     ctx: ClassMethodDecoratorContext<TThis, (this: TThis, ...args: TArgs) => Return>,
 ) => void;
@@ -25,7 +25,7 @@ type OnceDecorator = <TThis, TArgs extends unknown[], Return extends void>(
  */
 export function Once(force: boolean = false): OnceDecorator {
     return <TThis, TArgs extends unknown[], Return extends void>(
-        // eslint-disable-next-line @typescript-eslint/ban-types
+        // eslint-disable-next-line @typescript-eslint/no-unsafe-function-type
         target: Function,
         ctx: ClassMethodDecoratorContext<TThis, (this: TThis, ...args: TArgs) => Return>,
     ) => {

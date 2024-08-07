@@ -4,7 +4,7 @@ import { isBigint, isHrTimeAvailable, isPromiseLike } from '../util/predicates.j
 import { convertRecordedTime } from '../util/transfomers.js';
 
 type MeasureDecorator = <TThis, TArgs extends unknown[], Return>(
-    // eslint-disable-next-line @typescript-eslint/ban-types
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-function-type
     target: Function,
     ctx: ClassMethodDecoratorContext<TThis, (this: TThis, ...args: TArgs) => Return>,
 ) => void;
@@ -31,7 +31,7 @@ type MeasureDecorator = <TThis, TArgs extends unknown[], Return>(
  */
 export function Measure(label: string, unit: UnitOfTime): MeasureDecorator {
     return <TThis, TArgs extends unknown[], Return>(
-        // eslint-disable-next-line @typescript-eslint/ban-types
+        // eslint-disable-next-line @typescript-eslint/no-unsafe-function-type
         target: Function,
         _ctx: ClassMethodDecoratorContext<TThis, (this: TThis, ...args: TArgs) => Return>,
     ) => {
