@@ -3,7 +3,7 @@ import { Kind } from '../util/types.js';
 import { MetricBroadcaster } from './broadcaster.js';
 
 type GaugeDecorator = <TThis, TArgs extends unknown[], Return>(
-    // eslint-disable-next-line @typescript-eslint/ban-types
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-function-type
     target: Function,
     ctx: ClassMethodDecoratorContext<TThis, (this: TThis, ...args: TArgs) => Return>,
 ) => void;
@@ -29,7 +29,7 @@ type GaugeDecorator = <TThis, TArgs extends unknown[], Return>(
  */
 export function Gauge(label: string): GaugeDecorator {
     return <TThis, TArgs extends unknown[], Return>(
-        // eslint-disable-next-line @typescript-eslint/ban-types
+        // eslint-disable-next-line @typescript-eslint/no-unsafe-function-type
         target: Function,
         _ctx: ClassMethodDecoratorContext<TThis, (this: TThis, ...args: TArgs) => Return>,
     ) => {

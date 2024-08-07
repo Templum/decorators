@@ -2,7 +2,7 @@ import { UnitOfTime } from '../util/types.js';
 import { convertFrom } from '../util/transfomers.js';
 
 type ThrottleDecorator = <TThis, TArgs extends unknown[], Return extends void>(
-    // eslint-disable-next-line @typescript-eslint/ban-types
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-function-type
     target: Function,
     ctx: ClassMethodDecoratorContext<TThis, (this: TThis, ...args: TArgs) => Return>,
 ) => void;
@@ -30,7 +30,7 @@ type ThrottleDecorator = <TThis, TArgs extends unknown[], Return extends void>(
  */
 export function Throttle(time: number, unit: Exclude<UnitOfTime, 'Nanosecond'>): ThrottleDecorator {
     return <TThis, TArgs extends unknown[], Return extends void>(
-        // eslint-disable-next-line @typescript-eslint/ban-types
+        // eslint-disable-next-line @typescript-eslint/no-unsafe-function-type
         target: Function,
         ctx: ClassMethodDecoratorContext<TThis, (this: TThis, ...args: TArgs) => Return>,
     ) => {

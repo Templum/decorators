@@ -4,7 +4,7 @@ import { InMemoryCache } from './memory.js';
 import { isCacheKey, isPromiseLike } from '../util/predicates.js';
 
 type CacheDecorator = <TThis, TArgs extends unknown[], Return>(
-    // eslint-disable-next-line @typescript-eslint/ban-types
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-function-type
     target: Function,
     ctx: ClassMethodDecoratorContext<TThis, (this: TThis, ...args: TArgs) => Return>,
 ) => void;
@@ -51,7 +51,7 @@ export const CACHE_KEY = Symbol.for('Cache_Key');
  */
 export function CacheKey(position: number): CacheDecorator {
     return <TThis, TArgs extends unknown[], Return>(
-        // eslint-disable-next-line @typescript-eslint/ban-types
+        // eslint-disable-next-line @typescript-eslint/no-unsafe-function-type
         target: Function,
         _ctx: ClassMethodDecoratorContext<TThis, (this: TThis, ...args: TArgs) => Return>,
     ) => {
@@ -97,7 +97,7 @@ export function CacheKey(position: number): CacheDecorator {
  */
 export function Cache(config?: CacheConfig): CacheDecorator {
     return <TThis, TArgs extends unknown[], Return>(
-        // eslint-disable-next-line @typescript-eslint/ban-types
+        // eslint-disable-next-line @typescript-eslint/no-unsafe-function-type
         target: Function,
         _ctx: ClassMethodDecoratorContext<TThis, (this: TThis, ...args: TArgs) => Return>,
     ) => {
@@ -133,6 +133,7 @@ export function Cache(config?: CacheConfig): CacheDecorator {
                                 cache.store(key, Promise.resolve(current) as Return, ttlInTargetUnit);
                                 resolve(current);
                             })
+                            // eslint-disable-next-line @typescript-eslint/prefer-promise-reject-errors
                             .catch((error) => reject(error));
                     }) as Return;
                 }

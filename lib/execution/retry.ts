@@ -3,7 +3,7 @@ import { convertFrom } from '../util/transfomers.js';
 import { UnitOfTime } from '../util/types.js';
 
 type RetryDecorator = <TThis, TArgs extends unknown[], Return>(
-    // eslint-disable-next-line @typescript-eslint/ban-types
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-function-type
     target: Function,
     ctx: ClassMethodDecoratorContext<TThis, (this: TThis, ...args: TArgs) => Return>,
 ) => void;
@@ -98,11 +98,11 @@ export function Retry(isRetrieable: (error: Error) => boolean, config: Partial<R
     const delayInMs = convertFrom(delay, UnitOfTime.Millisecond, unit as UnitOfTime);
 
     return <TThis, TArgs extends unknown[], Return>(
-        // eslint-disable-next-line @typescript-eslint/ban-types
+        // eslint-disable-next-line @typescript-eslint/no-unsafe-function-type
         target: Function,
         _ctx: ClassMethodDecoratorContext<TThis, (this: TThis, ...args: TArgs) => Return>,
     ) => {
-        // eslint-disable-next-line @typescript-eslint/ban-types
+        // eslint-disable-next-line @typescript-eslint/no-unsafe-function-type
         return function (this: TThis, ...args: unknown[]): Return {
             const handleSyncRetries = (): unknown => {
                 for (let attempt = 0; attempt < retries; attempt++) {
@@ -149,6 +149,7 @@ export function Retry(isRetrieable: (error: Error) => boolean, config: Partial<R
                             .catch((_error) =>
                                 handleAsyncRetries()
                                     .then((response) => resolve(response))
+                                    // eslint-disable-next-line @typescript-eslint/prefer-promise-reject-errors
                                     .catch((error) => reject(error)),
                             );
                     }) as Return;
