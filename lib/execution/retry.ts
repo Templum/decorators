@@ -102,7 +102,6 @@ export function Retry(isRetrieable: (error: Error) => boolean, config: Partial<R
         target: Function,
         _ctx: ClassMethodDecoratorContext<TThis, (this: TThis, ...args: TArgs) => Return>,
     ) => {
-        // eslint-disable-next-line @typescript-eslint/no-unsafe-function-type
         return function (this: TThis, ...args: unknown[]): Return {
             const handleSyncRetries = (): unknown => {
                 for (let attempt = 0; attempt < retries; attempt++) {
