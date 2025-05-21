@@ -23,6 +23,12 @@ export default tslint.config(eslint.configs.recommended, prettier, ...tslint.con
                 "varsIgnorePattern": "^_",
                 "ignoreRestSiblings": true
             }
+        ],
+        "prettier/prettier": [
+            "error",
+            {
+                "endOfLine": "auto"
+            }
         ]
     }
 });
