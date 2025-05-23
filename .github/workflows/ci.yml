@@ -1,6 +1,7 @@
 name: CI Flow
 permissions:
   contents: read
+  checks: write
 on:
   push:
     paths-ignore:
