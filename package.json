@@ -21,7 +21,7 @@
     "aspect-programming"
   ],
   "devDependencies": {
-    "@types/node": "^22.15.21",
+    "@types/node": "^22.15.30",
     "@types/jest": "^29.5.14",
     "typescript": "^5.8.3",
     "ts-node": "^10.9.2",
